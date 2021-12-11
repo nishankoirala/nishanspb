@@ -1,0 +1,42 @@
+BOOST CONVERTER
+*COMMENTS
+Vin 1 0 220V
+L1 1 2 19.8mH
+D1 2 3 dmod1
+C1 3 0 5.33uF
+R1 3 0 100ohm
+S1 2 0 control_contact 0 swmod
+VCONTROL control_CONTACT 0 PWL(0 0 0.000146 0 0.0001461 1 0.0002 1) r=0
+.MODEL dmod1 D
+.MODEL swmod SW(Ron0=0.01 Roff=1Meg VT=0.98 VH=0.01)
+*.model mod1 d
+.CONTROL
+set color0 = white   ; áåëûé ôîí  
+set color1 = black
+set color2 = brown
+set color3 = green
+set color4 = gold
+set color5 = red
+TRAN 0.002m 20m 
+plot v(3)
+plot L1#BRANCH
+.ENDC
+.END
+//////
+buck converter
+V1 1 0 380V
+L1 2 3 37.89mH
+D1 0 2 mod1
+C1 3 0 32.895nF
+Rload 3 0 40ohm
+S1 1 2 4 0 swmod
+Vs 4 0 PWL(0 0 .0000980 0 .0000981 1 .0002 1) r=0
+.model swmod sw (Ron=0.01 Roff=1Meg VT=0.98 VH=0.01)
+.model mod1 d
+.control
+set color0=rgb:FF/FF/FF
+tran 0.01m 10m
+plot v(3)
+plot l1#branch
+.endc
+.end
