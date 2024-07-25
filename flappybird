@@ -1,0 +1,112 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+SCREEN_WIDTH = 600 
+SCREEN_HEIGHT = 600
+
+# Colors
+GRAY = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+
+# Game settings
+BIRD_WIDTH = 20
+BIRD_HEIGHT = 30
+PIPE_WIDTH = 70
+PIPE_HEIGHT = random.randint(150, 400)
+PIPE_GAP = 150
+# Bird settings
+bird_x = 50
+bird_y = SCREEN_HEIGHT // 2
+bird_vel_y = 0
+gravity = 0.8
+jump_height = -10
+# Pipe settings
+pipe_x = SCREEN_WIDTH
+pipe_vel_x = -3
+# Score
+score = 0
+# Fonts
+font = pygame.font.SysFont(None, 55)
+# Create screen
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption('Game by Nishan')
+def draw_bird(x, y):
+    pygame.draw.rect(screen, RED, [x, y, BIRD_WIDTH, BIRD_HEIGHT])
+
+def draw_pipe(x, height):
+    pygame.draw.rect(screen, GREEN, [x, 0, PIPE_WIDTH, height])
+    pygame.draw.rect(screen, GREEN, [x, height + PIPE_GAP, PIPE_WIDTH, SCREEN_HEIGHT])
+
+def display_score(score):
+    score_text = font.render(f'Score: {score}', True, BLACK)
+    screen.blit(score_text, [10, 10])
+
+def game_over():
+    over_text = font.render('Game Over', True, BLACK)
+    screen.blit(over_text, [SCREEN_WIDTH//2 - 100, SCREEN_HEIGHT//2 - 50])
+    pygame.display.update()
+    pygame.time.wait(2000)
+
+def main():
+    global bird_y, bird_vel_y, pipe_x, PIPE_HEIGHT, score
+
+    # Game loop
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    bird_vel_y = jump_height
+
+        # Update bird position
+        bird_vel_y += gravity+0.5
+        bird_y += bird_vel_y
+
+        # Update pipe position
+        pipe_x += pipe_vel_x
+
+        # Check if pipe is off screen
+        if pipe_x < -PIPE_WIDTH:
+            pipe_x = SCREEN_WIDTH
+            PIPE_HEIGHT = random.randint(150, 400)
+            score += 1
+
+        # Check for collisions
+        if (bird_y < PIPE_HEIGHT or bird_y + BIRD_HEIGHT > PIPE_HEIGHT + PIPE_GAP) and (pipe_x < bird_x + BIRD_WIDTH < pipe_x + PIPE_WIDTH):
+            game_over()
+            running = False
+
+        if bird_y > SCREEN_HEIGHT - BIRD_HEIGHT or bird_y < 0:
+            game_over()
+            running = False
+
+        # Clear screen
+        screen.fill(GRAY)
+                                    
+         # Draw bird
+        draw_bird(bird_x, bird_y)
+
+        # Draw pipes
+        draw_pipe(pipe_x, PIPE_HEIGHT)
+
+        # Display score
+        display_score(score)
+
+        # Update display
+        pygame.display.update()
+
+        # Frame rate
+        pygame.time.Clock().tick(30)
+
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()
